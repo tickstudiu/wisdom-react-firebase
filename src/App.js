@@ -1,28 +1,74 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import { SearchTableList, TableForm, TableList, SearchForm, MainNavbar } from './components';
+import { Container } from 'reactstrap';
 
-class App extends Component {
-  render() {
+const initialState = [
+    {
+        id: 1,
+        herbal: 'ขมิ้นชัน',
+        properties: 'ขมิ้นชันเป็นไม้ล้มลุก อายุหลายปี สูง 30-95 ซม. เหง้าใต้ดินรูปไข่ อ้วนสั้น มีแขนงรูปทรงกระบอกแตกออกด้านข้าง 2 ด้าน ตรงกันข้าม \n' +
+            'เนื้อในเหง้าสีเหลืองส้มหรือสีเหลืองจำปาปนสีแสด มีกลิ่นฉุน ใบเดี่ยว กลางใบสีแดงคล้ำ แทงออกมาเหง้าเรียงเป็นวงซ้อนทับกันรูปใบหอก \n' +
+            'ดอกช่อแทงออกจากเหง้า แทรกขึ้นมาระหว่างก้านใบ รูปทรงกระบอก กลีบดอกสีเหลืองอ่อน ใบประดับสีเขียวอ่อนหรือสีนวล ',
+        nature: 'แก้อาการท้องอืด ท้องเฟ้อ แน่น จุกเสียด อาหารไม่ย่อย อาการแสบคัน แก้หิว และแก้กระหาย ทำโดยล้างขมิ้นชันให้สะอาด ไม่ต้องปอกเปลือกออก\n' +
+            ' หั่นเป็นชิ้นบาง ๆ ตากแดดจัดสัก 1-2 วัน บดให้ละเอียดผสมกับน้ำผึ้งปั้นเป็นเม็ดขนาดปลายนิ้วก้อย กินครั้งละ 2-3 เม็ด วันละ 3 -4 ครั้ง\n' +
+            ' หลังอาหารและก่อนนอน แต่บางคนเมื่อกินยานี้แล้วแน่นจุกเสียดให้หยุดกินยานี้',
+        effect: 'ทำให้เกิดแผลร้อนในภายในปากได้\n' +
+            'ยับยั้งการแข็งตัวของเลือด\n' +
+            'อาจทำให้เกิดภาวะแทรกซ้อนในการตั้งครรภ์ได้\n' +
+            'เสี่ยงเกิดอาการห้อเลือด\n',
+    }, {
+        id: 2,
+        herbal: 'ขิง',
+        properties: 'เป็นพืชล้มลุก มีเหง้าใต้ดิน เปลือกนอกสีน้ำตาลแกมเหลือง เนื้อในสีนวลมีกลิ่นหอมเฉพาะ แทงหน่อหรือลำต้นเทียมขึ้นเป็นกอประกอบด้วยกาบหรือโคนใบหุ้มซ้อนกัน\n' +
+            ' ใบ เป็นชนิดใบเดี่ยว ออกเรียงสลับกันเป็นสองแถว ใบรูปหอกเกลี้ยงๆ หลังใบห่อจีบเป็นรูปรางนำปลายใบสอบเรียวแหลม โคนใบสองแคบและจะเป็นกาบหุ้มลำต้นเทียม\n' +
+            ' ตรงช่วงระหว่างกาบกับตัวใบจะหักโค้งเป็นข้อศอก ดอก สีขาว ออกรวมกันเป็นช่อรูปเห็ดหรือกระบองโบราณ แทงขึ้นมาจากเหง้า ทุกๆ ดอกที่กาบสีเขียวปนแดงรูปโค้งๆ ห่อรองรับ\n' +
+            ' กาบจะปิดแน่นเมื่อดอกยังอ่อน และจะขยายอ้าให้ เห็นดอกในภายหลัง',
+        nature: 'หง้า : รสหวานเผ็ดร้อน ขับลม แก้ท้องอืด จุกเสียด แน่นเฟ้อ คลื่นไส้อาเจียน แก้หอบไอ ขับเสมหะ แก้บิด เจริญอากาศธาตุ \n' +
+            'ต้น : รสเผ็ดร้อน ขับลมให้ผายเรอ แก้จุกเสียด แก้ท้องร่วง\n' +
+            'ใบ : รสเผ็ดร้อน บำรุงกำเดา แก้ฟกช้ำ แก้นิ่ว แก้ขัดปัสสาวะ แก้โรคตา ฆ่าพยาธิ\n' +
+            'ดอก : รสเผ็ดร้อน แก้โรคประสาทซึ่งทำให้ใจขุ่นมัว ช่วยย่อยอาหาร แก้ขัดปัสสาวะ\n' +
+            'ราก : รสหวานเผ็ดร้อนขม แก้แน่น เจริญอาหาร แก้ลม แก้เสมหะ แก้บิด\n' +
+            'ผล : รสหวานเผ็ด บำรุงน้ำนม แก้ไข้ แก้คอแห้ง เจ็บคอ แก้ตาฟาง เป็นยาอายุวัฒนะ',
+        effect: 'ขิงแก่มีสรรพคุณในทางยาและมีรสเผ็ดร้อนมากกว่าขิงอ่อน\n' +
+            'ขิงแก่มีเส้นใยมากกว่าขิงอ่อน\n' +
+            'ในเหง้าขิงมีเอนไซม์บางชนิดที่สามารถย่อยเนื้อสัตว์ให้เปื่อยได้\n' +
+            'สารจำพวกฟีนอลิค (Phenolic compound) ในขิงสามารถใช้กันบูดกันหืนในน้ำมันได้',
+    }
+];
+
+function App() {
+    const [data, setData] = useState(initialState);
+    const [sData, setSData] = useState(initialState);
+    const addData = (id, herbal, nature,  properties, effect) => {
+        const newData = [...data, {id,  herbal, properties, nature, effect}];
+        setData(newData)
+    };
+
+    const searchData = text =>{
+        const newData = [];
+        setSData(newData);
+        data.map(d => d.herbal.match(text) ? newData.push(d):null);
+        setSData(newData);
+    };
+
+    const removeData = index => {
+        const newData = [...data];
+        newData.splice(index, 1);
+        setData(newData);
+    };
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+        <div>
+            <Container>
+                <MainNavbar/>
+                <TableList data={data} removeData={removeData}/>
+                <TableForm addData={addData} id={initialState.length}/>
+                <hr className="my-3"/>
+                <SearchForm title="Search Table" searchData={searchData}/>
+                <SearchTableList data={sData} />
+            </Container>
+        </div>
+    )
 }
 
 export default App;

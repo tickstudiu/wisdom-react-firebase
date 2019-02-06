@@ -1,8 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
+import * as firebase from 'firebase';
 import * as serviceWorker from './serviceWorker';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const config = {
+    apiKey: "AIzaSyB3l8v1MT5NIC--l4O0kL4oRNcdkNBfPGg",
+    authDomain: "wisdon-react-firebase.firebaseapp.com",
+    databaseURL: "https://wisdon-react-firebase.firebaseio.com",
+    projectId: "wisdon-react-firebase",
+    storageBucket: "",
+    messagingSenderId: "179392383023"
+};
+firebase.initializeApp(config);
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
